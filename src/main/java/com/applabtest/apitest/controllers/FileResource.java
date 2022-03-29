@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 import static java.nio.file.Files.copy;
 import static java.nio.file.Paths.get;
@@ -55,5 +56,19 @@ public class FileResource {
         httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
                 .headers(httpHeaders).body(resource);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("delete/{filename}")
+    public String deleteFiles(@PathVariable("filename") String filename) throws IOException {
+        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
+        File imgDelete = new File(DIRECTORY+filename);
+        if(!Files.exists(filePath)) {
+            throw new FileNotFoundException("'"+filename+"'" + " Archivo no encontrado en el servidor");
+        }
+        else {
+            imgDelete.delete();
+            return "Imagen eliminada";
+        }
     }
 }
